@@ -38,7 +38,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.owncloud.android.R;
@@ -164,12 +163,15 @@ public class FolderPickerActivity extends FileActivity implements FileFragment.C
     private void setBackgroundText() {
         OCFileListFragment listFragment = getListOfFilesFragment();
         if (listFragment != null) {
-            int message = R.string.file_list_loading;
             if (!mSyncInProgress) {
-                // In case folder list is empty
-                message = R.string.file_list_empty_moving;
+                listFragment.setMessageForEmptyList(
+                        R.string.file_list_empty_headline,
+                        R.string.file_list_empty_moving,
+                        R.drawable.ic_list_empty_create_folder
+                );
+            } else {
+                listFragment.setEmptyListLoadingMessage();
             }
-            listFragment.setMessageForEmptyList(getString(message));
         } else {
             Log.e(TAG, "OCFileListFragment is null");
         }
@@ -359,9 +361,9 @@ public class FolderPickerActivity extends FileActivity implements FileFragment.C
     
     @Override
     public void onClick(View v) {
-        if (v == mCancelBtn) {
+        if (v.equals(mCancelBtn)) {
             finish();
-        } else if (v == mChooseBtn) {
+        } else if (v.equals(mChooseBtn)) {
             Intent i = getIntent();
             ArrayList<Parcelable> targetFiles = i.getParcelableArrayListExtra(FolderPickerActivity.EXTRA_FILES);
 
@@ -458,8 +460,7 @@ public class FolderPickerActivity extends FileActivity implements FileFragment.C
                                 currentFile = currentDir;
                             }
 
-                            if (synchFolderRemotePath != null && currentDir.getRemotePath().
-                                    equals(synchFolderRemotePath)) {
+                            if (currentDir.getRemotePath().equals(synchFolderRemotePath)) {
                                 OCFileListFragment fileListFragment = getListOfFilesFragment();
                                 if (fileListFragment != null) {
                                     fileListFragment.listDirectory(currentDir, false);

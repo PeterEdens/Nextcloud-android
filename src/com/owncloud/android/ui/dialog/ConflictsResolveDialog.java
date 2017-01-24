@@ -31,7 +31,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.owncloud.android.R;
-import com.owncloud.android.utils.DisplayUtils;
 
 
 /**
@@ -69,24 +68,27 @@ public class ConflictsResolveDialog extends DialogFragment {
 
                            @Override
                            public void onClick(DialogInterface dialog, int which) {
-                               if (mListener != null)
+                               if (mListener != null) {
                                    mListener.conflictDecisionMade(Decision.OVERWRITE);
+                               }
                            }
                        })
                    .setNeutralButton(R.string.conflict_keep_both,
                        new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                if (mListener != null)
+                                if (mListener != null) {
                                     mListener.conflictDecisionMade(Decision.KEEP_BOTH);
+                                }
                             }
                         })
                    .setNegativeButton(R.string.conflict_use_server_version,
                        new DialogInterface.OnClickListener() {
                            @Override
                            public void onClick(DialogInterface dialog, int which) {
-                               if (mListener != null)
+                               if (mListener != null) {
                                    mListener.conflictDecisionMade(Decision.SERVER);
+                                }
                            }
                    })
                    .create();

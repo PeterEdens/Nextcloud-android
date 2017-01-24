@@ -59,10 +59,13 @@ import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.fragment.FileFragment;
 import com.owncloud.android.utils.MimeTypeUtil;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 /**
  *  Holds a swiping galley where image files contained in an ownCloud directory are shown
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class PreviewImageActivity extends FileActivity implements
         FileFragment.ContainerActivity,
         ViewPager.OnPageChangeListener, OnRemoteOperationListener {
@@ -104,33 +107,27 @@ public class PreviewImageActivity extends FileActivity implements
         actionBar.hide();
 
 
-        // Make sure we're running on Honeycomb or higher to use FullScreen and
-        // Immersive Mode
-        if (isHoneycombOrHigher()) {
-        
-            mFullScreenAnchorView = getWindow().getDecorView();
-            // to keep our UI controls visibility in line with system bars
-            // visibility
-            mFullScreenAnchorView.setOnSystemUiVisibilityChangeListener
-                    (new View.OnSystemUiVisibilityChangeListener() {
-                @SuppressLint("InlinedApi")
-                @Override
-                public void onSystemUiVisibilityChange(int flags) {
-                    boolean visible = (flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-                    ActionBar actionBar = getSupportActionBar();
-                    if (visible) {
-                        actionBar.show();
-                        setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                    } else {
-                        actionBar.hide();
-                        setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        mFullScreenAnchorView = getWindow().getDecorView();
+        // to keep our UI controls visibility in line with system bars visibility
+        mFullScreenAnchorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @SuppressLint("InlinedApi")
+                    @Override
+                    public void onSystemUiVisibilityChange(int flags) {
+                        boolean visible = (flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+                        ActionBar actionBar = getSupportActionBar();
+                        if (visible) {
+                            actionBar.show();
+                            setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                        } else {
+                            actionBar.hide();
+                            setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                        }
                     }
-                }
-            });
+                });
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(getResources().getColor(R.color.owncloud_blue_dark_transparent));
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.owncloud_blue_dark_transparent));
         }
             
         if (savedInstanceState != null) {
@@ -152,7 +149,7 @@ public class PreviewImageActivity extends FileActivity implements
         }
 
         mPreviewImagePagerAdapter = new PreviewImagePagerAdapter(getSupportFragmentManager(),
-                parentFolder, getAccount(), getStorageManager(), MainApp.getOnlyOnDevice());
+                parentFolder, getAccount(), getStorageManager(), MainApp.isOnlyOnDevice());
 
         mViewPager = (ExtendedViewPager) findViewById(R.id.fragmentPager);
         int position = mHasSavedPosition ? mSavedPosition :
@@ -182,9 +179,7 @@ public class PreviewImageActivity extends FileActivity implements
     Handler mHideSystemUiHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (isHoneycombOrHigher()) {
-                hideSystemUI(mFullScreenAnchorView);
-            }
+            hideSystemUI(mFullScreenAnchorView);
             getSupportActionBar().hide();
         }
     };
@@ -193,7 +188,6 @@ public class PreviewImageActivity extends FileActivity implements
         mHideSystemUiHandler.removeMessages(0);
         mHideSystemUiHandler.sendEmptyMessageDelayed(0, delayMillis);
     }
-    
     
     /// handle Window Focus changes
     @Override
@@ -206,8 +200,6 @@ public class PreviewImageActivity extends FileActivity implements
             mHideSystemUiHandler.removeMessages(0);
         }
     }
-    
-    
     
     @Override
     public void onStart() {
@@ -348,10 +340,11 @@ public class PreviewImageActivity extends FileActivity implements
     private void backToDisplayActivity() {
         finish();
     }
-    
+
+    @SuppressFBWarnings("DLS")
     @Override
     public void showDetails(OCFile file) {
-        Intent showDetailsIntent = new Intent(this, FileDisplayActivity.class);
+        final Intent showDetailsIntent = new Intent(this, FileDisplayActivity.class);
         showDetailsIntent.setAction(FileDisplayActivity.ACTION_DETAILS);
         showDetailsIntent.putExtra(FileActivity.EXTRA_FILE, file);
         showDetailsIntent.putExtra(FileActivity.EXTRA_ACCOUNT,
@@ -359,7 +352,6 @@ public class PreviewImageActivity extends FileActivity implements
         startActivity(showDetailsIntent);
         int pos = mPreviewImagePagerAdapter.getFilePosition(file);
         file = mPreviewImagePagerAdapter.getFileAt(pos);
-        
     }
 
     private void requestForDownload(OCFile file) {
@@ -391,10 +383,9 @@ public class PreviewImageActivity extends FileActivity implements
             OCFile currentFile = mPreviewImagePagerAdapter.getFileAt(position); 
             getSupportActionBar().setTitle(currentFile.getFileName());
             setDrawerIndicatorEnabled(false);
-            if (!currentFile.isDown()) {
-                if (!mPreviewImagePagerAdapter.pendingErrorAt(position)) {
-                    requestForDownload(currentFile);
-                }
+            if (!currentFile.isDown()
+                    && !mPreviewImagePagerAdapter.pendingErrorAt(position)) {
+                requestForDownload(currentFile);
             }
 
             // Call to reset image zoom to initial state
@@ -473,36 +464,19 @@ public class PreviewImageActivity extends FileActivity implements
     }
 
     @SuppressLint("InlinedApi")
-	public void toggleFullScreen() {
+    public void toggleFullScreen() {
 
-        if (isHoneycombOrHigher()) {
-        
-            boolean visible = (mFullScreenAnchorView.getSystemUiVisibility()
-                    & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+        boolean visible = (mFullScreenAnchorView.getSystemUiVisibility()
+                & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
 
-            if (visible) {
-                hideSystemUI(mFullScreenAnchorView);
-                // actionBar.hide(); // propagated through
-                // OnSystemUiVisibilityChangeListener()
-            } else {
-                showSystemUI(mFullScreenAnchorView);
-                // actionBar.show(); // propagated through
-                // OnSystemUiVisibilityChangeListener()
-            }
-
+        if (visible) {
+            hideSystemUI(mFullScreenAnchorView);
+            // actionBar.hide(); // propagated through
+            // OnSystemUiVisibilityChangeListener()
         } else {
-
-            ActionBar actionBar = getSupportActionBar();
-            if (!actionBar.isShowing()) {
-                actionBar.show();
-                setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-
-            } else {
-                actionBar.hide();
-                setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
-            }
-
+            showSystemUI(mFullScreenAnchorView);
+            // actionBar.show(); // propagated through
+            // OnSystemUiVisibilityChangeListener()
         }
     }
 
@@ -520,8 +494,9 @@ public class PreviewImageActivity extends FileActivity implements
             }
             
             // Update file according to DB file, if it is possible
-            if (file.getFileId() > FileDataStorageManager.ROOT_PARENT_ID)            
+            if (file.getFileId() > FileDataStorageManager.ROOT_PARENT_ID) {
                 file = getStorageManager().getFileById(file.getFileId());
+            }
             
             if (file != null) {
                 /// Refresh the activity according to the Account and OCFile set
@@ -570,17 +545,5 @@ public class PreviewImageActivity extends FileActivity implements
             |   View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN       // draw full window;     Android >= 4.1
             |   View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION  // draw full window;     Android >= 4.1
         );
-    }
-
-    /**
-     * Checks if OS version is Honeycomb one or higher
-     *
-     * @return boolean
-     */
-    private boolean isHoneycombOrHigher() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            return true;
-        }
-        return false;
     }
 }

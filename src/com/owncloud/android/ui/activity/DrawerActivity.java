@@ -30,6 +30,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -142,6 +143,11 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
     private TextView mQuotaTextView;
 
     /**
+     * runnable that will be executed after the drawer has been closed.
+     */
+    private Runnable pendingRunnable;
+
+    /**
      * Initializes the drawer, its content and highlights the menu item with the given id.
      * This method needs to be called after the content view has been set.
      *
@@ -166,6 +172,11 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
             setupDrawerMenu(mNavigationView);
 
             setupQuotaElement();
+
+            // show folder sync menu item only for Android 7+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                mNavigationView.getMenu().removeItem(R.id.nav_folder_sync);
+            }
         }
 
         setupDrawerToggle();
@@ -187,6 +198,12 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
                     toggleAccountList();
                 }
                 invalidateOptionsMenu();
+                mDrawerToggle.setDrawerIndicatorEnabled(isDrawerIndicatorAvailable());
+
+                if (pendingRunnable != null) {
+                    new Handler().post(pendingRunnable);
+                    pendingRunnable = null;
+                }
             }
 
             /** Called when a drawer has settled in a completely open state. */
@@ -247,7 +264,7 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(final MenuItem menuItem) {
                         mDrawerLayout.closeDrawers();
 
                         if (menuItem.getItemId() == R.id.nav_all_files) {
@@ -322,6 +339,54 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
             navigationView.getMenu().setGroupVisible(R.id.drawer_menu_accounts, true);
         } else {
             navigationView.getMenu().setGroupVisible(R.id.drawer_menu_accounts, false);
+        }
+    }
+
+    private void selectNavigationItem(final MenuItem menuItem) {
+        int i = menuItem.getItemId();
+        if (i == R.id.nav_all_files) {
+            menuItem.setChecked(true);
+            mCheckedMenuItem = menuItem.getItemId();
+            showFiles(false);
+
+        } else if (i == R.id.nav_on_device) {
+            menuItem.setChecked(true);
+            mCheckedMenuItem = menuItem.getItemId();
+            showFiles(true);
+
+        } else if (i == R.id.nav_uploads) {
+            Intent uploadListIntent = new Intent(getApplicationContext(),
+                    UploadListActivity.class);
+            uploadListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(uploadListIntent);
+
+        } else if (i == R.id.nav_folder_sync) {
+            Intent folderSyncIntent = new Intent(getApplicationContext(), FolderSyncActivity.class);
+            startActivity(folderSyncIntent);
+
+        } else if (i == R.id.nav_settings) {
+            Intent settingsIntent = new Intent(getApplicationContext(), Preferences.class);
+            startActivity(settingsIntent);
+
+        } else if (i == R.id.nav_participate) {
+            Intent participateIntent = new Intent(getApplicationContext(),
+                    ParticipateActivity.class);
+            startActivity(participateIntent);
+
+        } else if (i == R.id.drawer_menu_account_add) {
+            createAccount(false);
+
+        } else if (i == R.id.drawer_menu_account_manage) {
+            Intent manageAccountsIntent = new Intent(getApplicationContext(),
+                    ManageAccountsActivity.class);
+            startActivityForResult(manageAccountsIntent, ACTION_MANAGE_ACCOUNTS);
+
+        } else if (i == Menu.NONE) {// account clicked
+            accountClicked(menuItem.getTitle().toString());
+
+            Log_OC.i(TAG, "Unknown drawer menu item clicked: " + menuItem.getTitle());
+        } else {
+            Log_OC.i(TAG, "Unknown drawer menu item clicked: " + menuItem.getTitle());
         }
     }
 
@@ -830,5 +895,9 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
         } else {
             Log_OC.e(TAG, "Drawer layout not ready to add drawer listener");
         }
+    }
+
+    public boolean isDrawerIndicatorAvailable() {
+        return true;
     }
 }

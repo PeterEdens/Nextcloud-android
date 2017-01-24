@@ -33,6 +33,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -294,7 +295,7 @@ public class FileUploader extends Service
          *                          otherwise, failed uploads due to any result will be retried.
          */
         public void retryFailedUploads(Context context, Account account, UploadResult uploadResult) {
-            UploadsStorageManager uploadsStorageManager = new UploadsStorageManager(context.getContentResolver());
+            UploadsStorageManager uploadsStorageManager = new UploadsStorageManager(context.getContentResolver(), context);
             OCUpload[] failedUploads = uploadsStorageManager.getFailedUploads();
             Account currentAccount = null;
             boolean resultMatch, accountMatch;
@@ -346,7 +347,7 @@ public class FileUploader extends Service
         mServiceHandler = new ServiceHandler(mServiceLooper, this);
         mBinder = new FileUploaderBinder();
 
-        mUploadsStorageManager = new UploadsStorageManager(getContentResolver());
+        mUploadsStorageManager = new UploadsStorageManager(getContentResolver(), getApplicationContext());
 
         int failedCounter = mUploadsStorageManager.failInProgressUploads(
             UploadResult.SERVICE_INTERRUPTED    // Add UploadResult.KILLED?
@@ -677,10 +678,10 @@ public class FileUploader extends Service
                 upload.cancel();
                 // need to update now table in mUploadsStorageManager,
                 // since the operation will not get to be run by FileUploader#uploadFile
-                mUploadsStorageManager.removeUpload(
-                        accountName,
-                        remotePath
-                );
+                mUploadsStorageManager.removeUpload(accountName, remotePath);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // try to cancel job in jobScheduler
+                mUploadsStorageManager.cancelPendingJob(accountName, remotePath);
             }
         }
 
@@ -721,8 +722,9 @@ public class FileUploader extends Service
          * @param file    A file that could be in the queue of pending uploads
          */
         public boolean isUploading(Account account, OCFile file) {
-            if (account == null || file == null)
+            if (account == null || file == null) {
                 return false;
+            }
             return (mPendingUploads.contains(account.name, file.getRemotePath()));
         }
 
@@ -750,7 +752,9 @@ public class FileUploader extends Service
                 Account account,
                 OCFile file
         ) {
-            if (account == null || file == null || listener == null) return;
+            if (account == null || file == null || listener == null) {
+                return;
+            }
             String targetKey = buildRemoteName(account.name, file.getRemotePath());
             mBoundListeners.put(targetKey, listener);
         }
@@ -766,7 +770,9 @@ public class FileUploader extends Service
                 OnDatatransferProgressListener listener,
                 OCUpload ocUpload
         ) {
-            if (ocUpload == null || listener == null) return;
+            if (ocUpload == null || listener == null) {
+                return;
+            }
             String targetKey = buildRemoteName(ocUpload.getAccountName(), ocUpload.getRemotePath());
             mBoundListeners.put(targetKey, listener);
         }
@@ -784,7 +790,9 @@ public class FileUploader extends Service
                 Account account,
                 OCFile file
         ) {
-            if (account == null || file == null || listener == null) return;
+            if (account == null || file == null || listener == null) {
+                return;
+            }
             String targetKey = buildRemoteName(account.name, file.getRemotePath());
             if (mBoundListeners.get(targetKey) == listener) {
                 mBoundListeners.remove(targetKey);
@@ -802,7 +810,9 @@ public class FileUploader extends Service
                 OnDatatransferProgressListener listener,
                 OCUpload ocUpload
         ) {
-            if (ocUpload == null || listener == null) return;
+            if (ocUpload == null || listener == null) {
+                return;
+            }
             String targetKey = buildRemoteName(ocUpload.getAccountName(), ocUpload.getRemotePath());
             if (mBoundListeners.get(targetKey) == listener) {
                 mBoundListeners.remove(targetKey);
@@ -851,8 +861,9 @@ public class FileUploader extends Service
 
         public ServiceHandler(Looper looper, FileUploader service) {
             super(looper);
-            if (service == null)
+            if (service == null) {
                 throw new IllegalArgumentException("Received invalid NULL in parameter 'service'");
+            }
             mService = service;
         }
 

@@ -71,7 +71,6 @@ import com.owncloud.android.operations.common.SyncOperation;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -218,14 +217,8 @@ public class OperationsService extends Service {
                     saveAllClients(this, MainApp.getAccountType());
 
             // TODO - get rid of these exceptions
-        } catch (AccountNotFoundException e) {
-            e.printStackTrace();
-        } catch (AuthenticatorException e) {
-            e.printStackTrace();
-        } catch (OperationCanceledException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (AccountNotFoundException | IOException | OperationCanceledException | AuthenticatorException e) {
+            Log_OC.d(TAG, e.getMessage(), e);
         }
 
         mUndispatchedFinishedOperations.clear();

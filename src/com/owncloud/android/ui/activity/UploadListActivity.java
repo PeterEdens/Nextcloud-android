@@ -159,7 +159,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
      * Open file with app associates with its MIME type. If MIME type unknown, show list with all apps.
      */
     private void openFileWithDefault(String localPath) {
-        Intent myIntent = new Intent(android.content.Intent.ACTION_VIEW);
+        Intent myIntent = new Intent(Intent.ACTION_VIEW);
         File file = new File(localPath);
         String mimetype = MimeTypeUtil.getBestMimeTypeByFilename(localPath);
         if ("application/octet-stream".equals(mimetype)) {
@@ -172,9 +172,9 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
             Toast.makeText(this, "Found no app to open this file.", Toast.LENGTH_LONG).show();
             Log_OC.i(TAG, "Could not find app for sending log history.");
 
-        }        
+        }
     }
-    
+
     /**
      * Same as openFileWithDefault() but user cannot save default app.
      * @param ocFile
@@ -205,17 +205,17 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
             requester.retryFailedUploads(this, null, null);
 
         } else if (i == R.id.action_clear_failed_uploads) {
-            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager = new UploadsStorageManager(getContentResolver(), getApplicationContext());
             storageManager.clearFailedButNotDelayedUploads();
             uploadListFragment.updateUploads();
 
         } else if (i == R.id.action_clear_successfull_uploads) {
-            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager = new UploadsStorageManager(getContentResolver(), getApplicationContext());
             storageManager.clearSuccessfulUploads();
             uploadListFragment.updateUploads();
 
         } else if (i == R.id.action_clear_finished_uploads) {
-            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager = new UploadsStorageManager(getContentResolver(), getApplicationContext());
             storageManager.clearAllFinishedButNotDelayedUploads();
             uploadListFragment.updateUploads();
 
@@ -239,14 +239,14 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         if (requestCode == FileActivity.REQUEST_CODE__UPDATE_CREDENTIALS && resultCode == RESULT_OK) {
             // Retry uploads of the updated account
             Account account = AccountUtils.getOwnCloudAccountByName(
-                this,
-                data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+                    this,
+                    data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
             );
             FileUploader.UploadRequester requester = new FileUploader.UploadRequester();
             requester.retryFailedUploads(
-                this,
-                account,
-                UploadResult.CREDENTIAL_ERROR
+                    this,
+                    account,
+                    UploadResult.CREDENTIAL_ERROR
             );
         }
     }
@@ -309,7 +309,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
                 Log_OC.d(TAG, "UploadListActivity not connected to Upload service. component: " +
                         component + " service: " + service);
                 return;
-            }            
+            }
         }
 
         @Override
@@ -332,7 +332,7 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         public void onReceive(Context context, Intent intent) {
             try {
                 UploadListFragment uploadListFragment =
-                    (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
+                        (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
 
                 uploadListFragment.updateUploads();
             } finally {

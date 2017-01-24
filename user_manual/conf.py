@@ -10,8 +10,7 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
-import sys, os, inspect
+import os, inspect
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -74,7 +73,7 @@ exclude_patterns = ['_build','scripts/*', 'ocdoc/*']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
-2
+
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
 #add_module_names = True

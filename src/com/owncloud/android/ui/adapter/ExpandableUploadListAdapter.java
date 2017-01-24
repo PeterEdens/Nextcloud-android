@@ -58,10 +58,11 @@ import java.util.Comparator;
 import java.util.Observable;
 import java.util.Observer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * This Adapter populates a ListView with following types of uploads: pending,
  * active, completed. Filtering possible.
- *
  */
 public class ExpandableUploadListAdapter extends BaseExpandableListAdapter implements Observer {
 
@@ -93,8 +94,14 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
 
             @Override
             public int compare(OCUpload upload1, OCUpload upload2) {
-                if (upload1.getUploadStatus().equals(UploadStatus.UPLOAD_IN_PROGRESS)) {
-                    if (!upload2.getUploadStatus().equals(UploadStatus.UPLOAD_IN_PROGRESS)) {
+                if (upload1 == null){
+                    return -1;
+                }
+                if (upload2 == null){
+                    return 1;
+                }
+                if (UploadStatus.UPLOAD_IN_PROGRESS.equals(upload1.getUploadStatus())) {
+                    if (!UploadStatus.UPLOAD_IN_PROGRESS.equals(upload2.getUploadStatus())) {
                         return -1;
                     }
                     // both are in progress
@@ -116,10 +123,12 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
                 }
             }
 
+            @SuppressFBWarnings("Bx")
             private int compareUploadId(OCUpload upload1, OCUpload upload2) {
                 return Long.valueOf(upload1.getUploadId()).compareTo(upload2.getUploadId());
             }
 
+            @SuppressFBWarnings("Bx")
             private int compareUpdateTime(OCUpload upload1, OCUpload upload2) {
                 return Long.valueOf(upload2.getUploadEndTimestamp()).compareTo(upload1.getUploadEndTimestamp());
             }
@@ -133,7 +142,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
     public ExpandableUploadListAdapter(FileActivity parentActivity) {
         Log_OC.d(TAG, "ExpandableUploadListAdapter");
         mParentActivity = parentActivity;
-        mUploadsStorageManager = new UploadsStorageManager(mParentActivity.getContentResolver());
+        mUploadsStorageManager = new UploadsStorageManager(mParentActivity.getContentResolver(), parentActivity.getApplicationContext());
         mUploadGroups = new UploadGroup[3];
         mUploadGroups[0] = new UploadGroup(mParentActivity.getString(R.string.uploads_view_group_current_uploads)) {
             @Override
@@ -206,7 +215,7 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
             view = inflator.inflate(R.layout.upload_list_item, parent, false);
         }
 
-        if (uploadsItems != null && uploadsItems.length > position) {
+        if (uploadsItems != null && uploadsItems.length > position && uploadsItems[position] != null) {
             final OCUpload upload = uploadsItems[position];
 
             // local file name
@@ -220,9 +229,8 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
 
             // remote path to parent folder
             TextView pathTextView = (TextView) view.findViewById(R.id.upload_remote_path);
-            String remoteParentPath = upload.getRemotePath();
-            remoteParentPath = new File(remoteParentPath).getParent();
-            pathTextView.setText(mParentActivity.getString(R.string.app_name) + remoteParentPath);
+            String remoteParentPath = new File(upload.getRemotePath()).getParent();
+            pathTextView.setText(remoteParentPath);
 
             // file size
             TextView fileSizeTextView = (TextView) view.findViewById(R.id.upload_file_size);
@@ -307,7 +315,6 @@ public class ExpandableUploadListAdapter extends BaseExpandableListAdapter imple
                         );
                     }
                     uploadDateTextView.setVisibility(View.GONE);
-                    pathTextView.setVisibility(View.GONE);
                     fileSizeTextView.setVisibility(View.GONE);
                     progressBar.invalidate();
                     break;

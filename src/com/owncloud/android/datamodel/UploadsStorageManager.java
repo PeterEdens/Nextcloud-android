@@ -20,10 +20,16 @@
  */
 package com.owncloud.android.datamodel;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.PersistableBundle;
+import android.support.annotation.RequiresApi;
 
 import com.owncloud.android.db.OCUpload;
 import com.owncloud.android.db.ProviderMeta.ProviderTableMeta;
@@ -33,7 +39,10 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.operations.UploadFileOperation;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -43,6 +52,8 @@ import java.util.Observable;
 public class UploadsStorageManager extends Observable {
 
     private ContentResolver mContentResolver;
+    private Context mContext;
+    private static final String AND = " AND ";
 
     static private final String TAG = UploadsStorageManager.class.getSimpleName();
 
@@ -88,11 +99,12 @@ public class UploadsStorageManager extends Observable {
 
     }
 
-    public UploadsStorageManager(ContentResolver contentResolver) {
+    public UploadsStorageManager(ContentResolver contentResolver, Context context) {
         if (contentResolver == null) {
             throw new IllegalArgumentException("Cannot create an instance with a NULL contentResolver");
         }
         mContentResolver = contentResolver;
+        mContext = context;
     }
 
     /**
@@ -363,12 +375,54 @@ public class UploadsStorageManager extends Observable {
      * Get all uploads which are currently being uploaded or waiting in the queue to be uploaded.
      */
     public OCUpload[] getCurrentAndPendingUploads() {
-        return getUploads(
+
+        OCUpload[] uploads = getUploads(
             ProviderTableMeta.UPLOADS_STATUS + "==" + UploadStatus.UPLOAD_IN_PROGRESS.value + " OR " +
             ProviderTableMeta.UPLOADS_LAST_RESULT + "==" + UploadResult.DELAYED_FOR_WIFI.getValue() + " OR " +
             ProviderTableMeta.UPLOADS_LAST_RESULT + "==" + UploadResult.DELAYED_FOR_CHARGING.getValue(),
             null
         );
+
+        // add pending Jobs
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return uploads;
+        } else {
+            List<OCUpload> result = getPendingJobs();
+            Collections.addAll(result, uploads);
+            return result.toArray(uploads);
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private List<OCUpload> getPendingJobs() {
+        JobScheduler js = (JobScheduler) mContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        ArrayList<OCUpload> list = new ArrayList<>();
+
+        for (JobInfo ji: js.getAllPendingJobs()) {
+            PersistableBundle extras = ji.getExtras();
+            OCUpload upload  = new OCUpload(extras.getString("filePath"),
+                    extras.getString("remotePath"),
+                    extras.getString("account"));
+
+            list.add(upload);
+        }
+
+        return list;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    public void cancelPendingJob(String accountName, String remotePath){
+        JobScheduler js = (JobScheduler) mContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        for (JobInfo ji: js.getAllPendingJobs()) {
+            PersistableBundle extras = ji.getExtras();
+            if (remotePath.equalsIgnoreCase(extras.getString("remotePath")) &&
+                accountName.equalsIgnoreCase(extras.getString("account"))){
+                js.cancel(ji.getId());
+                break;
+            }
+        }
     }
 
     /**
@@ -391,8 +445,8 @@ public class UploadsStorageManager extends Observable {
      */
     public OCUpload[] getFailedButNotDelayedUploads() {
         return getUploads(
-            ProviderTableMeta.UPLOADS_STATUS + "==" + UploadStatus.UPLOAD_FAILED.value + " AND " +
-                ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_WIFI.getValue() + " AND " +
+            ProviderTableMeta.UPLOADS_STATUS + "==" + UploadStatus.UPLOAD_FAILED.value + AND +
+                ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_WIFI.getValue() + AND +
                 ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_CHARGING.getValue(),
             null
         );
@@ -405,8 +459,8 @@ public class UploadsStorageManager extends Observable {
     public long clearFailedButNotDelayedUploads() {
         long result = getDB().delete(
             ProviderTableMeta.CONTENT_URI_UPLOADS,
-            ProviderTableMeta.UPLOADS_STATUS + "==" + UploadStatus.UPLOAD_FAILED.value + " AND " +
-                ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_WIFI.getValue() + " AND " +
+            ProviderTableMeta.UPLOADS_STATUS + "==" + UploadStatus.UPLOAD_FAILED.value + AND +
+                ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_WIFI.getValue() + AND +
                 ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_CHARGING.getValue(),
             null
         );
@@ -436,7 +490,7 @@ public class UploadsStorageManager extends Observable {
         long result = getDB().delete(
                 ProviderTableMeta.CONTENT_URI_UPLOADS,
                 ProviderTableMeta.UPLOADS_STATUS + "=? OR " + ProviderTableMeta.UPLOADS_STATUS + "=? AND " +
-                ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_WIFI.getValue() + " AND " +
+                ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_WIFI.getValue() + AND +
                 ProviderTableMeta.UPLOADS_LAST_RESULT + "<>" + UploadResult.DELAYED_FOR_CHARGING.getValue(),
                 whereArgs
         );
