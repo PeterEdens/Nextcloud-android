@@ -190,58 +190,49 @@ public class UploadFilesActivity extends FileActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                if(mCurrentDir != null && mCurrentDir.getParentFile() != null){
-                    onBackPressed(); 
-                }
-                break;
+        int i = item.getItemId();
+        if (i == android.R.id.home) {
+            if (mCurrentDir != null && mCurrentDir.getParentFile() != null) {
+                onBackPressed();
             }
-            case R.id.action_select_all: {
-                item.setChecked(!item.isChecked());
-                mSelectAll = item.isChecked();
-                setSelectAllMenuItem(item, mSelectAll);
-                mFileListFragment.selectAllFiles(item.isChecked());
-                break;
-            }
-            case R.id.action_sort: {
-                // Read sorting order, default to sort by name ascending
-                Integer sortOrder = PreferenceManager.getSortOrder(this);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.actionbar_sort_title)
-                        .setSingleChoiceItems(R.array.actionbar_sortby, sortOrder ,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        switch (which){
-                                            case 0:
-                                                mFileListFragment.sortByName(true);
-                                                break;
-                                            case 1:
-                                                mFileListFragment.sortByDate(false);
-                                                break;
-                                        }
-
-                                        dialog.dismiss();
+        } else if (i == R.id.action_select_all) {
+            item.setChecked(!item.isChecked());
+            mSelectAll = item.isChecked();
+            setSelectAllMenuItem(item, mSelectAll);
+            mFileListFragment.selectAllFiles(item.isChecked());
+        } else if (i == R.id.action_sort) {
+            Integer sortOrder = PreferenceManager.getSortOrder(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.actionbar_sort_title)
+                    .setSingleChoiceItems(R.array.actionbar_sortby, sortOrder,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case 0:
+                                            mFileListFragment.sortByName(true);
+                                            break;
+                                        case 1:
+                                            mFileListFragment.sortByDate(false);
+                                            break;
                                     }
-                                });
-                builder.create().show();
-                break;
+
+                                    dialog.dismiss();
+                                }
+                            });
+            builder.create().show();
+        } else if (i == R.id.action_switch_view) {
+            if (isGridView()) {
+                item.setTitle(getString(R.string.action_switch_grid_view));
+                item.setIcon(R.drawable.ic_view_module);
+                mFileListFragment.switchToListView();
+            } else {
+                item.setTitle(getApplicationContext().getString(R.string.action_switch_list_view));
+                item.setIcon(R.drawable.ic_view_list);
+                mFileListFragment.switchToGridView();
             }
-            case R.id.action_switch_view: {
-                if (isGridView()) {
-                    item.setTitle(getString(R.string.action_switch_grid_view));
-                    item.setIcon(R.drawable.ic_view_module);
-                    mFileListFragment.switchToListView();
-                } else {
-                    item.setTitle(getApplicationContext().getString(R.string.action_switch_list_view));
-                    item.setIcon(R.drawable.ic_view_list);
-                    mFileListFragment.switchToGridView();
-                }
-                return true;
-            }
-            default:
-                retval = super.onOptionsItemSelected(item);
+            return true;
+        } else {
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }

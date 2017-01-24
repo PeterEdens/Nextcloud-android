@@ -72,7 +72,7 @@ public class UsersAndGroupsSearchProvider extends ContentProvider {
     private static final int RESULTS_PER_PAGE = 50;
     private static final int REQUESTED_PAGE = 1;
 
-    public static final String AUTHORITY = "com.nextcloud.android.providers.UsersAndGroupsSearchProvider";
+    public static final String AUTHORITY = "com.nextcloud.spreedbox.android.providers.UsersAndGroupsSearchProvider";
     public static final String ACTION_SHARE_WITH = AUTHORITY + ".action.SHARE_WITH";
 
     public static final String CONTENT = "content";

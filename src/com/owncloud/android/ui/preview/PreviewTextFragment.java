@@ -331,35 +331,28 @@ public class PreviewTextFragment extends FileFragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_share_file: {
-                mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-                return true;
-            }
-            case R.id.action_open_file_with: {
-                openFile();
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_see_details: {
-                seeDetails();
-                return true;
-            }
-            case R.id.action_send_file: {
-                sendFile();
-                return true;
-            }
-            case R.id.action_sync_file: {
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-
-            default:
-                return super.onOptionsItemSelected(item);
+        int i = item.getItemId();
+        if (i == R.id.action_share_file) {
+            mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+            return true;
+        } else if (i == R.id.action_open_file_with) {
+            openFile();
+            return true;
+        } else if (i == R.id.action_remove_file) {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
+            return true;
+        } else if (i == R.id.action_see_details) {
+            seeDetails();
+            return true;
+        } else if (i == R.id.action_send_file) {
+            sendFile();
+            return true;
+        } else if (i == R.id.action_sync_file) {
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

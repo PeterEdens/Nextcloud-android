@@ -244,80 +244,76 @@ public class EditShareFragment extends Fragment {
             /// else, getView() cannot be NULL
 
             CompoundButton subordinate;
-            switch(compound.getId()) {
-                case R.id.canShareSwitch:
-                    Log_OC.v(TAG, "canShareCheckBox toggled to " + isChecked);
-                    updatePermissionsToShare();
-                    break;
+            int i1 = compound.getId();
+            if (i1 == R.id.canShareSwitch) {
+                Log_OC.v(TAG, "canShareCheckBox toggled to " + isChecked);
+                updatePermissionsToShare();
 
-                case R.id.canEditSwitch:
-                    Log_OC.v(TAG, "canEditCheckBox toggled to " + isChecked);
-                    /// sync subordinate CheckBoxes
-                    boolean isFederated = ShareType.FEDERATED.equals(mShare.getShareType());
-                    if (mFile.isFolder()) {
-                        if (isChecked) {
-                            if (!isFederated) {
-                                /// not federated shares -> enable all the subpermisions
-                                for (int i = 0; i < sSubordinateCheckBoxIds.length; i++) {
-                                    //noinspection ConstantConditions, prevented in the method beginning
-                                    subordinate = (CompoundButton) getView().findViewById(sSubordinateCheckBoxIds[i]);
-                                    subordinate.setVisibility(View.VISIBLE);
-                                    if (!subordinate.isChecked() &&
-                                        !mFile.isSharedWithMe()) {          // see (1)
-                                        toggleDisablingListener(subordinate);
-                                    }
-                                }
-                            } else {
-                                /// federated share -> enable delete subpermission, as server side; TODO why?
-                                //noinspection ConstantConditions, prevented in the method beginning
-                                subordinate = (CompoundButton) getView().findViewById(R.id.canEditDeleteCheckBox);
-                                if (!subordinate.isChecked()) {
-                                    toggleDisablingListener(subordinate);
-                                }
-
-                            }
-                        } else {
+            } else if (i1 == R.id.canEditSwitch) {
+                Log_OC.v(TAG, "canEditCheckBox toggled to " + isChecked);
+                /// sync subordinate CheckBoxes
+                boolean isFederated = ShareType.FEDERATED.equals(mShare.getShareType());
+                if (mFile.isFolder()) {
+                    if (isChecked) {
+                        if (!isFederated) {
+                            /// not federated shares -> enable all the subpermisions
                             for (int i = 0; i < sSubordinateCheckBoxIds.length; i++) {
                                 //noinspection ConstantConditions, prevented in the method beginning
                                 subordinate = (CompoundButton) getView().findViewById(sSubordinateCheckBoxIds[i]);
-                                subordinate.setVisibility(View.GONE);
-                                if (subordinate.isChecked()) {
+                                subordinate.setVisibility(View.VISIBLE);
+                                if (!subordinate.isChecked() &&
+                                        !mFile.isSharedWithMe()) {          // see (1)
                                     toggleDisablingListener(subordinate);
                                 }
                             }
+                        } else {
+                            /// federated share -> enable delete subpermission, as server side; TODO why?
+                            //noinspection ConstantConditions, prevented in the method beginning
+                            subordinate = (CompoundButton) getView().findViewById(R.id.canEditDeleteCheckBox);
+                            if (!subordinate.isChecked()) {
+                                toggleDisablingListener(subordinate);
+                            }
+
+                        }
+                    } else {
+                        for (int i = 0; i < sSubordinateCheckBoxIds.length; i++) {
+                            //noinspection ConstantConditions, prevented in the method beginning
+                            subordinate = (CompoundButton) getView().findViewById(sSubordinateCheckBoxIds[i]);
+                            subordinate.setVisibility(View.GONE);
+                            if (subordinate.isChecked()) {
+                                toggleDisablingListener(subordinate);
+                            }
                         }
                     }
+                }
 
-                    if(!(mFile.isFolder() && isChecked && mFile.isSharedWithMe())       // see (1)
-                        || isFederated ) {
-                        updatePermissionsToShare();
-                    }
-
-                    // updatePermissionsToShare()   // see (1)
-                    // (1) These modifications result in an exceptional UI behaviour for the case
-                    // where the switch 'can edit' is enabled for a *reshared folder*; if the same
-                    // behaviour was applied than for owned folder, and the user did not have full
-                    // permissions to update the folder, an error would be reported by the server
-                    // and the children checkboxes would be automatically hidden again
-                    break;
-
-                case R.id.canEditCreateCheckBox:
-                    Log_OC.v(TAG, "canEditCreateCheckBox toggled to " + isChecked);
-                    syncCanEditSwitch(compound, isChecked);
+                if (!(mFile.isFolder() && isChecked && mFile.isSharedWithMe())       // see (1)
+                        || isFederated) {
                     updatePermissionsToShare();
-                    break;
+                }
 
-                case R.id.canEditChangeCheckBox:
-                    Log_OC.v(TAG, "canEditChangeCheckBox toggled to " + isChecked);
-                    syncCanEditSwitch(compound, isChecked);
-                    updatePermissionsToShare();
-                    break;
+                // updatePermissionsToShare()   // see (1)
+                // (1) These modifications result in an exceptional UI behaviour for the case
+                // where the switch 'can edit' is enabled for a *reshared folder*; if the same
+                // behaviour was applied than for owned folder, and the user did not have full
+                // permissions to update the folder, an error would be reported by the server
+                // and the children checkboxes would be automatically hidden again
 
-                case R.id.canEditDeleteCheckBox:
-                    Log_OC.v(TAG, "canEditDeleteCheckBox toggled to " + isChecked);
-                    syncCanEditSwitch(compound, isChecked);
-                    updatePermissionsToShare();
-                    break;
+            } else if (i1 == R.id.canEditCreateCheckBox) {
+                Log_OC.v(TAG, "canEditCreateCheckBox toggled to " + isChecked);
+                syncCanEditSwitch(compound, isChecked);
+                updatePermissionsToShare();
+
+            } else if (i1 == R.id.canEditChangeCheckBox) {
+                Log_OC.v(TAG, "canEditChangeCheckBox toggled to " + isChecked);
+                syncCanEditSwitch(compound, isChecked);
+                updatePermissionsToShare();
+
+            } else if (i1 == R.id.canEditDeleteCheckBox) {
+                Log_OC.v(TAG, "canEditDeleteCheckBox toggled to " + isChecked);
+                syncCanEditSwitch(compound, isChecked);
+                updatePermissionsToShare();
+
             }
 
         }

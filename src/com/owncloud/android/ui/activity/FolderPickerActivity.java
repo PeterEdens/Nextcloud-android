@@ -270,24 +270,20 @@ public class FolderPickerActivity extends FileActivity implements FileFragment.C
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
-        switch (item.getItemId()) {
-        case R.id.action_create_dir: {
-            CreateFolderDialogFragment dialog = 
+        int i = item.getItemId();
+        if (i == R.id.action_create_dir) {
+            CreateFolderDialogFragment dialog =
                     CreateFolderDialogFragment.newInstance(getCurrentFolder());
             dialog.show(
-                    getSupportFragmentManager(), 
+                    getSupportFragmentManager(),
                     CreateFolderDialogFragment.CREATE_FOLDER_FRAGMENT
             );
-            break;
-        }
-        case android.R.id.home: {
+        } else if (i == android.R.id.home) {
             OCFile currentDir = getCurrentFolder();
-            if(currentDir != null && currentDir.getParentId() != 0) {
+            if (currentDir != null && currentDir.getParentId() != 0) {
                 onBackPressed();
             }
-            break;
-        }
-        default:
+        } else {
             retval = super.onOptionsItemSelected(item);
         }
         return retval;

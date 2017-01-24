@@ -245,72 +245,56 @@ public class FileDetailFragment extends FileFragment implements OnClickListener 
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_share_file: {
-                mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
-                return true;
+        int i = item.getItemId();
+        if (i == R.id.action_share_file) {
+            mContainerActivity.getFileOperationsHelper().showShareFile(getFile());
+            return true;
+        } else if (i == R.id.action_open_file_with) {
+            mContainerActivity.getFileOperationsHelper().openFile(getFile());
+            return true;
+        } else if (i == R.id.action_remove_file) {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), FTAG_CONFIRMATION);
+            return true;
+        } else if (i == R.id.action_rename_file) {
+            RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), FTAG_RENAME_FILE);
+            return true;
+        } else if (i == R.id.action_cancel_sync) {
+            ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
+            return true;
+        } else if (i == R.id.action_download_file || i == R.id.action_sync_file) {
+            mContainerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        } else if (i == R.id.action_send_file) {
+            if (!getFile().isDown()) {  // Download the file
+                Log_OC.d(TAG, getFile().getRemotePath() + " : File must be downloaded");
+                ((FileDisplayActivity) mContainerActivity).startDownloadForSending(getFile());
+            } else {
+                mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
             }
-            case R.id.action_open_file_with: {
-                mContainerActivity.getFileOperationsHelper().openFile(getFile());
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_rename_file: {
-                RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), FTAG_RENAME_FILE);
-                return true;
-            }
-            case R.id.action_cancel_sync: {
-                ((FileDisplayActivity)mContainerActivity).cancelTransference(getFile());
-                return true;
-            }
-            case R.id.action_download_file:
-            case R.id.action_sync_file: {
-                mContainerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_send_file: {
-                // Obtain the file
-                if (!getFile().isDown()) {  // Download the file                    
-                    Log_OC.d(TAG, getFile().getRemotePath() + " : File must be downloaded");
-                    ((FileDisplayActivity) mContainerActivity).startDownloadForSending(getFile());
-                }
-                else {
-                    mContainerActivity.getFileOperationsHelper().sendDownloadedFile(getFile());
-                }
-                return true;
-            }
-            case R.id.action_favorite_file:{
-                mContainerActivity.getFileOperationsHelper().toggleFavorite(getFile(), true);
-                return true;
-            }
-            case R.id.action_unfavorite_file:{
-                mContainerActivity.getFileOperationsHelper().toggleFavorite(getFile(), false);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+            return true;
+        } else if (i == R.id.action_favorite_file) {
+            mContainerActivity.getFileOperationsHelper().toggleFavorite(getFile(), true);
+            return true;
+        } else if (i == R.id.action_unfavorite_file) {
+            mContainerActivity.getFileOperationsHelper().toggleFavorite(getFile(), false);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.fdFavorite: {
-                CheckBox cb = (CheckBox) getView().findViewById(R.id.fdFavorite);
-                mContainerActivity.getFileOperationsHelper().toggleFavorite(getFile(),cb.isChecked());
-                break;
-            }
-            case R.id.fdCancelBtn: {
-                ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
-                break;
-            }
-            default:
-                Log_OC.e(TAG, "Incorrect view clicked!");
+        int i = v.getId();
+        if (i == R.id.fdFavorite) {
+            CheckBox cb = (CheckBox) getView().findViewById(R.id.fdFavorite);
+            mContainerActivity.getFileOperationsHelper().toggleFavorite(getFile(), cb.isChecked());
+        } else if (i == R.id.fdCancelBtn) {
+            ((FileDisplayActivity) mContainerActivity).cancelTransference(getFile());
+        } else {
+            Log_OC.e(TAG, "Incorrect view clicked!");
         }
     }
 

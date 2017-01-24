@@ -534,4 +534,5 @@
     <string name="storage_description_sd_no">SD card %1$d</string>
     <string name="storage_description_unknown">Unknown</string>
 
+    <string name="drawer_chat">Secure Chat</string>
 </resources>

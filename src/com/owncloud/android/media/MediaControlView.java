@@ -396,27 +396,23 @@ public class MediaControlView extends FrameLayout /* implements OnLayoutChangeLi
     public void onClick(View v) {
         int pos;
         boolean playing = mPlayer.isPlaying();
-        switch (v.getId()) {
-        
-        case R.id.playBtn: 
+        if (v.getId() == R.id.playBtn) {
             doPauseResume();
-            break;
-
-        case R.id.rewindBtn:
+        }
+        else if (v.getId() == R.id.rewindBtn) {
             pos = mPlayer.getCurrentPosition();
             pos -= 5000;
             mPlayer.seekTo(pos);
             if (!playing) mPlayer.pause();  // necessary in some 2.3.x devices 
             setProgress();
-            break;
-
-        case R.id.forwardBtn:
+        }
+        else if (v.getId() == R.id.forwardBtn) {
             pos = mPlayer.getCurrentPosition();
             pos += 15000;
             mPlayer.seekTo(pos);
             if (!playing) mPlayer.pause(); // necessary in some 2.3.x devices
             setProgress();
-            break;
+
         
         }
     }

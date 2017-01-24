@@ -12,7 +12,9 @@
     <string name ="log_name">nextcloud</string>
     <string name ="default_display_name_for_root_folder">Nextcloud</string>
     <string name ="user_agent">Mozilla/5.0 (Android) ownCloud-android/%1$s</string>
-    
+    <string name="share_with_authority">com.nextcloud.android.providers.UsersAndGroupsSearchProvider</string>
+    <string name="chat_class"></string>
+
     <!-- URLs and flags related -->
     <string name="server_url"></string>
     <bool name="show_server_url_input">true</bool>

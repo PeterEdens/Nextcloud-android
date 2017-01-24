@@ -71,6 +71,11 @@
             android:id="@+id/nav_participate"
             android:icon="@drawable/ic_participate"
             android:title="@string/drawer_participate"/>
+        <item
+            android:orderInCategory="3"
+            android:id="@+id/nav_chat"
+            android:icon="@drawable/ic_chat_bubble_black_24dp"
+            android:title="@string/drawer_chat"/>
     </group>
 
     <!--

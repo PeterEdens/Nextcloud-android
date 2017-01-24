@@ -550,66 +550,58 @@ public class FileDisplayActivity extends HookActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
-        switch (item.getItemId()) {
-            case R.id.action_sync_account: {
-                startSynchronization();
-                break;
+        int i = item.getItemId();
+        if (i == R.id.action_sync_account) {
+            startSynchronization();
+        } else if (i == android.R.id.home) {
+            FileFragment second = getSecondFragment();
+            OCFile currentDir = getCurrentDir();
+            if (isDrawerOpen()) {
+                closeDrawer();
+            } else if ((currentDir != null && currentDir.getParentId() != 0) ||
+                    (second != null && second.getFile() != null)) {
+                onBackPressed();
+
+            } else {
+                openDrawer();
             }
-            case android.R.id.home: {
-                FileFragment second = getSecondFragment();
-                OCFile currentDir = getCurrentDir();
-                if (isDrawerOpen()) {
-                    closeDrawer();
-                } else if ((currentDir != null && currentDir.getParentId() != 0) ||
-                        (second != null && second.getFile() != null)) {
-                    onBackPressed();
-
-                } else {
-                    openDrawer();
-                }
-                break;
-            }
-            case R.id.action_sort: {
-                Integer sortOrder = getSortOrder(this);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.actionbar_sort_title)
-                        .setSingleChoiceItems(R.array.menu_items_sort_by_options, sortOrder,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        switch (which) {
-                                            case 0:
-                                                sortByName(true);
-                                                break;
-                                            case 1:
-                                                sortByDate(false);
-                                                break;
-                                            case 2:
-                                                sortBySize(false);
-                                        }
-
-                                        dialog.dismiss();
+        } else if (i == R.id.action_sort) {
+            Integer sortOrder = getSortOrder(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.actionbar_sort_title)
+                    .setSingleChoiceItems(R.array.menu_items_sort_by_options, sortOrder,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case 0:
+                                            sortByName(true);
+                                            break;
+                                        case 1:
+                                            sortByDate(false);
+                                            break;
+                                        case 2:
+                                            sortBySize(false);
                                     }
-                                });
-                builder.create().show();
-                break;
+
+                                    dialog.dismiss();
+                                }
+                            });
+            builder.create().show();
+        } else if (i == R.id.action_switch_view) {
+            if (isGridView()) {
+                item.setTitle(getString(R.string.action_switch_grid_view));
+                item.setIcon(ContextCompat.getDrawable(getApplicationContext(),
+                        R.drawable.ic_view_module));
+                getListOfFilesFragment().setListAsPreferred();
+            } else {
+                item.setTitle(getApplicationContext().getString(R.string.action_switch_list_view));
+                item.setIcon(ContextCompat.getDrawable(getApplicationContext(),
+                        R.drawable.ic_view_list));
+                getListOfFilesFragment().setGridAsPreferred();
             }
-            case R.id.action_switch_view: {
-                if (isGridView()) {
-                    item.setTitle(getString(R.string.action_switch_grid_view));
-                    item.setIcon(ContextCompat.getDrawable(getApplicationContext(),
-                            R.drawable.ic_view_module));
-                    getListOfFilesFragment().setListAsPreferred();
-                } else {
-                    item.setTitle(getApplicationContext().getString(R.string.action_switch_list_view));
-                    item.setIcon(ContextCompat.getDrawable(getApplicationContext(),
-                            R.drawable.ic_view_list));
-                    getListOfFilesFragment().setGridAsPreferred();
-                }
-                return true;
-            }
-            default:
-                retval = super.onOptionsItemSelected(item);
+            return true;
+        } else {
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }

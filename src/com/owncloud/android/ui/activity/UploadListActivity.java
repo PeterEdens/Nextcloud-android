@@ -189,38 +189,38 @@ public class UploadListActivity extends FileActivity implements UploadListFragme
         UploadsStorageManager storageManager = null;
         UploadListFragment uploadListFragment =
                 (UploadListFragment) getSupportFragmentManager().findFragmentByTag(TAG_UPLOAD_LIST_FRAGMENT);
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isDrawerOpen()) {
-                    closeDrawer();
-                } else {
-                    openDrawer();
-                }
-            case R.id.action_retry_uploads:
-                FileUploader.UploadRequester requester = new FileUploader.UploadRequester();
-                requester.retryFailedUploads(this, null, null);
-                break;
+        int i = item.getItemId();
+        if (i == android.R.id.home) {
+            if (isDrawerOpen()) {
+                closeDrawer();
+            } else {
+                openDrawer();
+            }
 
-            case R.id.action_clear_failed_uploads:
-                storageManager = new UploadsStorageManager(getContentResolver());
-                storageManager.clearFailedButNotDelayedUploads();
-                uploadListFragment.updateUploads();
-                break;
+            FileUploader.UploadRequester requester = new FileUploader.UploadRequester();
+            requester.retryFailedUploads(this, null, null);
 
-            case R.id.action_clear_successfull_uploads:
-                storageManager = new UploadsStorageManager(getContentResolver());
-                storageManager.clearSuccessfulUploads();
-                uploadListFragment.updateUploads();
-                break;
+        } else if (i == R.id.action_retry_uploads) {
+            FileUploader.UploadRequester requester = new FileUploader.UploadRequester();
+            requester.retryFailedUploads(this, null, null);
 
-            case R.id.action_clear_finished_uploads:
-                storageManager = new UploadsStorageManager(getContentResolver());
-                storageManager.clearAllFinishedButNotDelayedUploads();
-                uploadListFragment.updateUploads();
-                break;
+        } else if (i == R.id.action_clear_failed_uploads) {
+            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager.clearFailedButNotDelayedUploads();
+            uploadListFragment.updateUploads();
 
-            default:
-                retval = super.onOptionsItemSelected(item);
+        } else if (i == R.id.action_clear_successfull_uploads) {
+            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager.clearSuccessfulUploads();
+            uploadListFragment.updateUploads();
+
+        } else if (i == R.id.action_clear_finished_uploads) {
+            storageManager = new UploadsStorageManager(getContentResolver());
+            storageManager.clearAllFinishedButNotDelayedUploads();
+            uploadListFragment.updateUploads();
+
+        } else {
+            retval = super.onOptionsItemSelected(item);
         }
 
         return retval;

@@ -250,44 +250,66 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         mDrawerLayout.closeDrawers();
 
-                        switch (menuItem.getItemId()) {
-                            case R.id.nav_all_files:
-                                menuItem.setChecked(true);
-                                mCheckedMenuItem = menuItem.getItemId();
-                                showFiles(false);
-                                break;
-                             case R.id.nav_on_device:
+                        if (menuItem.getItemId() == R.id.nav_all_files) {
+                            menuItem.setChecked(true);
+                            mCheckedMenuItem = menuItem.getItemId();
+                            showFiles(false);
+                        }
+                        else if (menuItem.getItemId() == R.id.nav_on_device) {
                                  menuItem.setChecked(true);
                                  mCheckedMenuItem = menuItem.getItemId();
                                  showFiles(true);
-                                 break;
-                            case R.id.nav_uploads:
+
+                        }
+                        else if (menuItem.getItemId() == R.id.nav_uploads) {
                                 Intent uploadListIntent = new Intent(getApplicationContext(),
                                         UploadListActivity.class);
                                 uploadListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(uploadListIntent);
-                                break;
-                            case R.id.nav_settings:
+
+                        }
+                        else if (menuItem.getItemId() ==  R.id.nav_settings) {
                                 Intent settingsIntent = new Intent(getApplicationContext(), Preferences.class);
                                 startActivity(settingsIntent);
-                                break;
-                            case R.id.nav_participate:
+
+                        }
+                        else if (menuItem.getItemId() ==  R.id.nav_participate) {
                                 Intent participateIntent = new Intent(getApplicationContext(),
                                         ParticipateActivity.class);
                                 startActivity(participateIntent);
-                                break;
-                            case R.id.drawer_menu_account_add:
+                        }
+                        else if (menuItem.getItemId() == R.id.nav_chat) {
+                            String className = getString(R.string.chat_class);
+
+                            if (className.length() != 0) {
+                                Class<?> c = null;
+                                try {
+                                    c = Class.forName(className);
+                                }
+                                catch (ClassNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+
+                                if (c != null) {
+                                    Intent chatIntent = new Intent(getApplicationContext(),
+                                            c);
+                                    startActivity(chatIntent);
+                                }
+                            }
+                        }
+                        else if (menuItem.getItemId() ==  R.id.drawer_menu_account_add) {
                                 createAccount(false);
-                                break;
-                            case R.id.drawer_menu_account_manage:
+                        }
+                        else if (menuItem.getItemId() == R.id.drawer_menu_account_manage) {
                                 Intent manageAccountsIntent = new Intent(getApplicationContext(),
                                         ManageAccountsActivity.class);
                                 startActivityForResult(manageAccountsIntent, ACTION_MANAGE_ACCOUNTS);
-                                break;
-                            case Menu.NONE:
+                        }
+                        else if (menuItem.getItemId() == Menu.NONE) {
                                 // account clicked
                                 accountClicked(menuItem.getTitle().toString());
-                            default:
+                        }
+                        else {
                                 Log_OC.i(TAG, "Unknown drawer menu item clicked: " + menuItem.getTitle());
                         }
 

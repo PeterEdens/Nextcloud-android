@@ -335,82 +335,80 @@ public class ReceiveExternalFilesActivity extends FileActivity
     @Override
     public void onClick(View v) {
         // click on button
-        switch (v.getId()) {
-            case R.id.uploader_choose_folder:
-                mUploadPath = "";   // first element in mParents is root dir, represented by "";
-                // init mUploadPath with "/" results in a "//" prefix
-                for (String p : mParents) {
-                    mUploadPath += p + OCFile.PATH_SEPARATOR;
-                }
+        int i = v.getId();
+        if (i == R.id.uploader_choose_folder) {
+            mUploadPath = "";   // first element in mParents is root dir, represented by "";
+            // init mUploadPath with "/" results in a "//" prefix
+            for (String p : mParents) {
+                mUploadPath += p + OCFile.PATH_SEPARATOR;
+            }
 
-                if (uploadTextSnippet()){
-                    LayoutInflater layout = LayoutInflater.from(getBaseContext());
-                    View view = layout.inflate(R.layout.edit_box_dialog, null);
+            if (uploadTextSnippet()) {
+                LayoutInflater layout = LayoutInflater.from(getBaseContext());
+                View view = layout.inflate(R.layout.edit_box_dialog, null);
 
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                            this);
+                Builder alertDialogBuilder = new Builder(
+                        this);
 
-                    alertDialogBuilder.setView(view);
+                alertDialogBuilder.setView(view);
 
-                    final EditText userInput = (EditText) view.findViewById(R.id.user_input);
-                    userInput.setText(TEXT_FILE_SUFFIX);
+                final EditText userInput = (EditText) view.findViewById(R.id.user_input);
+                userInput.setText(TEXT_FILE_SUFFIX);
 
-                    alertDialogBuilder.setCancelable(false)
-                            .setPositiveButton(R.string.common_ok, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog,int id) {
-                                            PrintWriter out;
-                                            try {
-                                                File f = File.createTempFile("nextcloud", TEXT_FILE_SUFFIX);
-                                                out = new PrintWriter(f);
-                                                out.println(getIntent().getStringExtra(Intent.EXTRA_TEXT));
-                                                out.close();
+                alertDialogBuilder.setCancelable(false)
+                        .setPositiveButton(R.string.common_ok, new OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                PrintWriter out;
+                                try {
+                                    File f = File.createTempFile("nextcloud", TEXT_FILE_SUFFIX);
+                                    out = new PrintWriter(f);
+                                    out.println(getIntent().getStringExtra(Intent.EXTRA_TEXT));
+                                    out.close();
 
-                                                FileUploader.UploadRequester requester =
-                                                        new FileUploader.UploadRequester();
+                                    FileUploader.UploadRequester requester =
+                                            new FileUploader.UploadRequester();
 
-                                                // verify if file name has suffix
-                                                String filename = userInput.getText().toString();
+                                    // verify if file name has suffix
+                                    String filename = userInput.getText().toString();
 
-                                                if (!filename.endsWith(TEXT_FILE_SUFFIX)){
-                                                    filename += TEXT_FILE_SUFFIX;
-                                                }
+                                    if (!filename.endsWith(TEXT_FILE_SUFFIX)) {
+                                        filename += TEXT_FILE_SUFFIX;
+                                    }
 
-                                                requester.uploadNewFile(
-                                                        getBaseContext(),
-                                                        getAccount(),
-                                                        f.getAbsolutePath(),
-                                                        mFile.getRemotePath() + filename,
-                                                        FileUploader.LOCAL_BEHAVIOUR_COPY,
-                                                        null,
-                                                        true,
-                                                        UploadFileOperation.CREATED_BY_USER
-                                                );
-                                            } catch (IOException e) {
-                                                Log_OC.w(TAG, e.getMessage());
-                                            }
+                                    requester.uploadNewFile(
+                                            getBaseContext(),
+                                            getAccount(),
+                                            f.getAbsolutePath(),
+                                            mFile.getRemotePath() + filename,
+                                            FileUploader.LOCAL_BEHAVIOUR_COPY,
+                                            null,
+                                            true,
+                                            UploadFileOperation.CREATED_BY_USER
+                                    );
+                                } catch (IOException e) {
+                                    Log_OC.w(TAG, e.getMessage());
+                                }
 
-                                            finish();
-                                        }
-                                    })
-                            .setNegativeButton(R.string.common_cancel, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog,int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.common_cancel, new OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
 
-                    alertDialogBuilder.create().show();
-                } else {
-                    Log_OC.d(TAG, "Uploading file to dir " + mUploadPath);
-                    uploadFiles();
-                }
-                break;
+                alertDialogBuilder.create().show();
+            } else {
+                Log_OC.d(TAG, "Uploading file to dir " + mUploadPath);
+                uploadFiles();
+            }
 
-            case R.id.uploader_cancel:
-                finish();
-                break;
+        } else if (i == R.id.uploader_cancel) {
+            finish();
 
-            default:
-                throw new IllegalArgumentException("Wrong element clicked");
+        } else {
+            throw new IllegalArgumentException("Wrong element clicked");
         }
     }
 
@@ -669,21 +667,20 @@ public class ReceiveExternalFilesActivity extends FileActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
-        switch (item.getItemId()) {
-            case R.id.action_create_dir:
-                CreateFolderDialogFragment dialog = CreateFolderDialogFragment.newInstance(mFile);
-                dialog.show(
-                        getSupportFragmentManager(),
-                        CreateFolderDialogFragment.CREATE_FOLDER_FRAGMENT);
-                break;
-            case android.R.id.home:
-                if ((mParents.size() > 1)) {
-                    onBackPressed();
-                }
-                break;
+        int i = item.getItemId();
+        if (i == R.id.action_create_dir) {
+            CreateFolderDialogFragment dialog = CreateFolderDialogFragment.newInstance(mFile);
+            dialog.show(
+                    getSupportFragmentManager(),
+                    CreateFolderDialogFragment.CREATE_FOLDER_FRAGMENT);
 
-            default:
-                retval = super.onOptionsItemSelected(item);
+        } else if (i == android.R.id.home) {
+            if ((mParents.size() > 1)) {
+                onBackPressed();
+            }
+
+        } else {
+            retval = super.onOptionsItemSelected(item);
         }
         return retval;
     }
