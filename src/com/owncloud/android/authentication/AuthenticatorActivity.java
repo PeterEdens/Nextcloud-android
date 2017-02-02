@@ -170,15 +170,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     private boolean mServerIsChecked = false;
     private boolean mServerIsValid = false;
 
-    private GetServerInfoOperation.ServerInfo mServerInfo = new GetServerInfoOperation.ServerInfo();
+    protected GetServerInfoOperation.ServerInfo mServerInfo = new GetServerInfoOperation.ServerInfo();
 
 
     /// Authentication PRE-Fragment elements 
     private CheckBox mOAuth2Check;
     private TextView mOAuthAuthEndpointText;
     private TextView mOAuthTokenEndpointText;
-    private EditText mUsernameInput;
-    private EditText mPasswordInput;
+    protected EditText mUsernameInput;
+    protected EditText mPasswordInput;
     private View mOkButton;
     private TextView mAuthStatusView;
 
@@ -224,7 +224,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
         /// get input values
         mAction = getIntent().getByteExtra(EXTRA_ACTION, ACTION_CREATE);
-        mAccount = getIntent().getExtras().getParcelable(EXTRA_ACCOUNT);
+        if (getIntent().hasExtra(EXTRA_ACCOUNT)) {
+            mAccount = getIntent().getExtras().getParcelable(EXTRA_ACCOUNT);
+        }
+
         if (savedInstanceState == null) {
             initAuthTokenType();
         } else {
@@ -331,7 +334,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     }
 
     private void initAuthTokenType() {
-        mAuthTokenType = getIntent().getExtras().getString(AccountAuthenticator.KEY_AUTH_TOKEN_TYPE);
+        if (getIntent().getExtras() != null) {
+            mAuthTokenType = getIntent().getExtras().getString(AccountAuthenticator.KEY_AUTH_TOKEN_TYPE);
+        }
+
         if (mAuthTokenType == null) {
             if (mAccount != null) {
                 boolean oAuthRequired = (mAccountMgr.getUserData(mAccount, Constants.KEY_SUPPORTS_OAUTH2) != null);
