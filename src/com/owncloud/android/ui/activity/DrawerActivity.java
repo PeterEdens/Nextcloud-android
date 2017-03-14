@@ -55,6 +55,8 @@ import com.owncloud.android.lib.resources.users.RemoteGetUserQuotaOperation;
 import com.owncloud.android.ui.TextDrawable;
 import com.owncloud.android.utils.DisplayUtils;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+
 /**
  * Base class to handle setup of the drawer implementation including user switching and avatar fetching and fallback
  * generation.
@@ -281,7 +283,7 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
                         else if (menuItem.getItemId() == R.id.nav_uploads) {
                                 Intent uploadListIntent = new Intent(getApplicationContext(),
                                         UploadListActivity.class);
-                                uploadListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                uploadListIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(uploadListIntent);
 
                         }
@@ -296,7 +298,7 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
                                 startActivity(participateIntent);
                         }
                         else if (menuItem.getItemId() == R.id.nav_chat) {
-                            String className = getString(R.string.chat_class);
+                            String className = getString(R.string.chooser_class);
 
                             if (className.length() != 0) {
                                 Class<?> c = null;
@@ -310,6 +312,29 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
                                 if (c != null) {
                                     Intent chatIntent = new Intent(getApplicationContext(),
                                             c);
+                                    chatIntent.putExtra(getString(R.string.extra_mode), getString(R.string.mode_im));
+                                    chatIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(chatIntent);
+                                }
+                            }
+                        }
+                        else if (menuItem.getItemId() == R.id.nav_video_chat) {
+                            String className = getString(R.string.chooser_class);
+
+                            if (className.length() != 0) {
+                                Class<?> c = null;
+                                try {
+                                    c = Class.forName(className);
+                                }
+                                catch (ClassNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+
+                                if (c != null) {
+                                    Intent chatIntent = new Intent(getApplicationContext(),
+                                            c);
+                                    chatIntent.putExtra(getString(R.string.extra_mode), getString(R.string.mode_video_chat));
+                                    chatIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(chatIntent);
                                 }
                             }
@@ -357,7 +382,7 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
         } else if (i == R.id.nav_uploads) {
             Intent uploadListIntent = new Intent(getApplicationContext(),
                     UploadListActivity.class);
-            uploadListIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            uploadListIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(uploadListIntent);
 
         } else if (i == R.id.nav_folder_sync) {

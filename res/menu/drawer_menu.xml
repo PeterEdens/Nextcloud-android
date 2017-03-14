@@ -75,12 +75,28 @@
             android:orderInCategory="3"
             android:id="@+id/nav_participate"
             android:icon="@drawable/ic_participate"
-            android:title="@string/drawer_participate"/>
+            android:title="@string/drawer_participate"
+            android:visible="false"/>
+
+    </group>
+
+    <group android:id="@+id/drawer_menu_navigation" android:checkableBehavior="single">
+
         <item
             android:orderInCategory="3"
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_chat_bubble_black_24dp"
             android:title="@string/drawer_chat"/>
+        <item
+            android:orderInCategory="3"
+            android:id="@+id/nav_video_chat"
+            android:icon="@drawable/ic_voice_chat_black_24dp"
+            android:title="@string/drawer_video_chat"/>
+        <item
+            android:orderInCategory="3"
+            android:id="@+id/nav_share_files"
+            android:icon="@drawable/ic_cloud_black_24dp"
+            android:title="@string/drawer_share_files"/>
     </group>
 
     <!--

@@ -40,6 +40,7 @@ repositories {
 dependencies {
     /// dependencies for app building
     compile name: 'touch-image-view'
+    compile project(':sharedresourceslib')
     compile 'com.github.nextcloud:android-library:1.0.10'
     compile "com.android.support:support-v4:${supportLibraryVersion}"
     compile "com.android.support:design:${supportLibraryVersion}"
