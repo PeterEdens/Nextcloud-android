@@ -63,6 +63,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+
 /**
  * An Activity that allows the user to manage accounts.
  */
@@ -264,10 +266,31 @@ public class ManageAccountsActivity extends FileActivity
         } else {
             // restart list of files with new account
             AccountUtils.setCurrentOwnCloudAccount(ManageAccountsActivity.this, account.name);
-            Intent i = new Intent(ManageAccountsActivity.this, FileDisplayActivity.class);
-            i.putExtra(FileActivity.EXTRA_ACCOUNT, account);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
+
+            String className = getString(R.string.chooser_class);
+
+            if (className.length() != 0) {
+                Class<?> c = null;
+                try {
+                    c = Class.forName(className);
+                }
+                catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                if (c != null) {
+                    Intent chatIntent = new Intent(getApplicationContext(),
+                            c);
+                    chatIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(chatIntent);
+                }
+            }
+            else {
+                Intent i = new Intent(ManageAccountsActivity.this, FileDisplayActivity.class);
+                i.putExtra(FileActivity.EXTRA_ACCOUNT, account);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+            }
         }
     }
 
