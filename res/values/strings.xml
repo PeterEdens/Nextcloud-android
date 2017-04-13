@@ -554,9 +554,9 @@
     <string name="storage_description_sd_no">SD card %1$d</string>
     <string name="storage_description_unknown">Unknown</string>
 
-    <string name="drawer_chat">Instant Messaging</string>
-    <string name="drawer_video_chat">Audio/Video Chat</string>
-    <string name="drawer_share_files">Share Files</string>
+    <string name="drawer_chat">SecureIM</string>
+    <string name="drawer_video_chat">SecureTalk</string>
+    <string name="drawer_share_files">SecureFileShare</string>
 
     <!-- What's new feature and texts to show -->
     <string name="whats_new_title">What\'s new in Nextcloud</string>
