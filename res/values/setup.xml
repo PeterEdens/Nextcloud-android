@@ -17,6 +17,7 @@
     <string name ="user_agent">Mozilla/5.0 (Android) ownCloud-android/%1$s</string>
     <string name="share_with_authority">com.nextcloud.android.providers.UsersAndGroupsSearchProvider</string>
     <string name="chooser_class"></string>
+    <string name="authenticator_class">com.owncloud.android.authentication.AuthenticatorActivity</string>
     <string name="extra_mode"></string>
     <string name="mode_im"></string>
     <string name="mode_video_chat"></string>

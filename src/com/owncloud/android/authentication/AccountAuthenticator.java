@@ -34,6 +34,8 @@ import android.widget.Toast;
 import com.owncloud.android.lib.common.accounts.AccountTypeUtils;
 import com.owncloud.android.lib.common.utils.Log_OC;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
+
 
 /**
  *  Authenticator for ownCloud accounts.
@@ -44,7 +46,7 @@ import com.owncloud.android.lib.common.utils.Log_OC;
  *  TODO - review completeness
  */
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
-    
+
     /**
      * Is used by android system to assign accounts to authenticators. Should be
      * used by application and all extensions.
@@ -53,11 +55,11 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public static final String KEY_REQUIRED_FEATURES = "requiredFeatures";
     public static final String KEY_LOGIN_OPTIONS = "loginOptions";
     public static final String KEY_ACCOUNT = "account";
-    
+
     private static final String TAG = AccountAuthenticator.class.getSimpleName();
-    
+
     private Context mContext;
-    
+
     private Handler mHandler;
 
     public AccountAuthenticator(Context context) {
@@ -76,12 +78,12 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             throws NetworkErrorException {
         Log_OC.i(TAG, "Adding account with type " + accountType
                 + " and auth token " + authTokenType);
-        
+
         final Bundle bundle = new Bundle();
-        
+
         AccountManager accountManager = AccountManager.get(mContext);
         Account[] accounts = accountManager.getAccountsByType(MainApp.getAccountType());
-        
+
         if (mContext.getResources().getBoolean(R.bool.multiaccount_support) || accounts.length < 1) {
             try {
                 validateAccountType(accountType);
@@ -90,8 +92,9 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                         + e.getMessage(), e);
                 return e.getFailureBundle();
             }
-            
-            final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+
+            Class<?> c = getAuthenticatorActivityClass(R.string.authenticator_class);
+            final Intent intent = new Intent(mContext, c);
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
             intent.putExtra(KEY_AUTH_TOKEN_TYPE, authTokenType);
             intent.putExtra(KEY_REQUIRED_FEATURES, requiredFeatures);
@@ -99,16 +102,16 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             intent.putExtra(AuthenticatorActivity.EXTRA_ACTION, AuthenticatorActivity.ACTION_CREATE);
 
             setIntentFlags(intent);
-            
+
             bundle.putParcelable(AccountManager.KEY_INTENT, intent);
-        
+
         } else {
 
             // Return an error
             bundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_UNSUPPORTED_OPERATION);
-            final String message = String.format(mContext.getString(R.string.auth_unsupported_multiaccount), mContext.getString(R.string.app_name)); 
+            final String message = String.format(mContext.getString(R.string.auth_unsupported_multiaccount), mContext.getString(R.string.app_name));
             bundle.putString(AccountManager.KEY_ERROR_MESSAGE, message);
-           
+
             mHandler.post(new Runnable() {
 
                 @Override
@@ -116,9 +119,9 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                 }
             });
-            
+
         }
-        
+
         return bundle;
     }
 
@@ -135,7 +138,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     + e.getMessage(), e);
             return e.getFailureBundle();
         }
-        Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        Class<?> c = getAuthenticatorActivityClass(R.string.authenticator_class);
+        final Intent intent = new Intent(mContext, c);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
                 response);
         intent.putExtra(KEY_ACCOUNT, account);
@@ -170,7 +174,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     + e.getMessage(), e);
             return e.getFailureBundle();
         }
-        
+
         /// check if required token is stored
         final AccountManager am = AccountManager.get(mContext);
         String accessToken;
@@ -186,15 +190,16 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             result.putString(AccountManager.KEY_AUTHTOKEN, accessToken);
             return result;
         }
-        
+
         /// if not stored, return Intent to access the AuthenticatorActivity and UPDATE the token for the account
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        Class<?> c = getAuthenticatorActivityClass(R.string.authenticator_class);
+        final Intent intent = new Intent(mContext, c);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(KEY_AUTH_TOKEN_TYPE, authTokenType);
         intent.putExtra(KEY_LOGIN_OPTIONS, options);
         intent.putExtra(AuthenticatorActivity.EXTRA_ACCOUNT, account);
         intent.putExtra(AuthenticatorActivity.EXTRA_ACTION, AuthenticatorActivity.ACTION_UPDATE_EXPIRED_TOKEN);
-        
+
 
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
@@ -218,7 +223,8 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public Bundle updateCredentials(AccountAuthenticatorResponse response,
             Account account, String authTokenType, Bundle options)
             throws NetworkErrorException {
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        Class<?> c = getAuthenticatorActivityClass(R.string.authenticator_class);
+        final Intent intent = new Intent(mContext, c);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
                 response);
         intent.putExtra(KEY_ACCOUNT, account);
@@ -315,5 +321,22 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
         private static final long serialVersionUID = 1L;
 
+    }
+
+    private Class<?> getAuthenticatorActivityClass(int classStringId) {
+        String className = mContext.getString(classStringId);
+
+        if (className.length() != 0) {
+            Class<?> c = null;
+            try {
+                c = Class.forName(className);
+            }
+            catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            return c;
+        }
+        return null;
     }
 }
