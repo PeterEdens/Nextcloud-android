@@ -42,6 +42,8 @@ public class TextDrawable extends Drawable {
      */
     private String mText;
 
+    boolean mSquare = false;
+
     /**
      * the text paint to be rendered.
      */
@@ -102,6 +104,26 @@ public class TextDrawable extends Drawable {
     }
 
     /**
+     * creates an avatar in form of a TextDrawable with the first letter of the account name in a circle with the
+     * given radius.
+     *
+     * @param accountName the account name
+     * @param radiusInDp  the circle's radius
+     * @return the avatar as a TextDrawable
+     * @throws UnsupportedEncodingException if the charset is not supported when calculating the color values
+     * @throws NoSuchAlgorithmException if the specified algorithm is not available when calculating the color values
+     */
+    @NonNull
+    public static TextDrawable createSquareAvatar(String accountName, float radiusInDp) throws
+            UnsupportedEncodingException, NoSuchAlgorithmException {
+        int[] rgb = BitmapUtils.calculateRGB(accountName);
+        TextDrawable avatar = new TextDrawable(
+                accountName.substring(0, 1).toUpperCase(), rgb[0], rgb[1], rgb[2], radiusInDp);
+        avatar.mSquare = true;
+
+        return avatar;
+    }
+    /**
      * Draw in its bounds (set via setBounds) respecting optional effects such as alpha (set via setAlpha) and color
      * filter (set via setColorFilter) a circular background with a user's first character.
      *
@@ -109,7 +131,12 @@ public class TextDrawable extends Drawable {
      */
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawCircle(mRadius, mRadius, mRadius, mBackground);
+        if (mSquare) {
+            canvas.drawRect(0, 0, mRadius * 2, mRadius * 2, mBackground);
+        }
+        else {
+            canvas.drawCircle(mRadius, mRadius, mRadius, mBackground);
+        }
         canvas.drawText(mText, mRadius, mRadius - ((mTextPaint.descent() + mTextPaint.ascent()) / 2), mTextPaint);
     }
 

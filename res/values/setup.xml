@@ -40,7 +40,7 @@
     
     
     <!-- Colors -->
-    <color name="login_text_color">@color/white</color>
+    <color name="login_text_color">#aaa</color>
     <color name="login_text_hint_color">#7fC0E3</color>
     <color name="login_background_color">#FFFFFF</color>
     <color name="login_logo_background_color">#FFFFFF</color>
@@ -48,7 +48,7 @@
     <color name="actionbar_start_color">#0082c9</color>
     <color name="actionbar_end_color">#0082c9</color>
     <color name="primary_button_background_color">@color/owncloud_blue_accent</color>
-    <color name="primary_button_text_color">@color/white</color>
+    <color name="primary_button_text_color">#aaa</color>
     <color name="secondary_button_background_color">#D6D7D7</color>
     <color name="secondary_button_text_color">@color/black</color>
     <color name="drawer_header_color">@color/owncloud_blue_accent</color>

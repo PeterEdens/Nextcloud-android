@@ -292,11 +292,11 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
                                 startActivity(settingsIntent);
 
                         }
-                        else if (menuItem.getItemId() ==  R.id.nav_participate) {
+                        /*else if (menuItem.getItemId() ==  R.id.nav_participate) {
                                 Intent participateIntent = new Intent(getApplicationContext(),
                                         ParticipateActivity.class);
                                 startActivity(participateIntent);
-                        }
+                        }*/
                         else if (menuItem.getItemId() == R.id.nav_chat) {
                             String className = getString(R.string.chooser_class);
 
@@ -393,12 +393,12 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
             Intent settingsIntent = new Intent(getApplicationContext(), Preferences.class);
             startActivity(settingsIntent);
 
-        } else if (i == R.id.nav_participate) {
+        }/* else if (i == R.id.nav_participate) {
             Intent participateIntent = new Intent(getApplicationContext(),
                     ParticipateActivity.class);
             startActivity(participateIntent);
 
-        } else if (i == R.id.drawer_menu_account_add) {
+        } */else if (i == R.id.drawer_menu_account_add) {
             createAccount(false);
 
         } else if (i == R.id.drawer_menu_account_manage) {

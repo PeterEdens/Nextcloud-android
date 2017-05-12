@@ -30,6 +30,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -42,6 +44,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -1703,7 +1706,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
         } else {
             mServerStatusView.setText(mServerStatusText);
-            mServerStatusView.setCompoundDrawablesWithIntrinsicBounds(mServerStatusIcon, 0, 0, 0);
+            //mServerStatusView.setCompoundDrawablesWithIntrinsicBounds(mServerStatusIcon, 0, 0, 0);
+            Drawable drawable = getResources().getDrawable(mServerStatusIcon); //Your drawable image
+            drawable = DrawableCompat.wrap(drawable);
+            DrawableCompat.setTint(drawable, Color.GRAY); // Set whatever color you want
+            DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);
+            mServerStatusView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
             mServerStatusView.setVisibility(View.VISIBLE);
         }
 
@@ -1720,7 +1728,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
         } else {
             mAuthStatusView.setText(mAuthStatusText);
-            mAuthStatusView.setCompoundDrawablesWithIntrinsicBounds(mAuthStatusIcon, 0, 0, 0);
+            //mAuthStatusView.setCompoundDrawablesWithIntrinsicBounds(mAuthStatusIcon, 0, 0, 0);
+            Drawable drawable = getResources().getDrawable(mAuthStatusIcon); //Your drawable image
+            drawable = DrawableCompat.wrap(drawable);
+            DrawableCompat.setTint(drawable, Color.GRAY); // Set whatever color you want
+            DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_IN);
+            mAuthStatusView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
             mAuthStatusView.setVisibility(View.VISIBLE);
         }
     }
