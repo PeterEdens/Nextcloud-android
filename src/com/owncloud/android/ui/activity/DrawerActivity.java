@@ -259,7 +259,7 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
         // on pre lollipop the light theme adds a black tint to icons with white coloring
         // ruining the generic avatars, so tinting for icons is deactivated pre lollipop
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            navigationView.setItemIconTintList(null);
+            //navigationView.setItemIconTintList(null);
         }
 
         // setup actions for drawer menu items
@@ -343,9 +343,22 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
                                 createAccount(false);
                         }
                         else if (menuItem.getItemId() == R.id.drawer_menu_account_manage) {
-                                Intent manageAccountsIntent = new Intent(getApplicationContext(),
-                                        ManageAccountsActivity.class);
-                                startActivityForResult(manageAccountsIntent, ACTION_MANAGE_ACCOUNTS);
+                            String className = getString(R.string.manage_accounts_class);
+
+                            if (className.length() != 0) {
+                                Class<?> c = null;
+                                try {
+                                    c = Class.forName(className);
+                                } catch (ClassNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+
+                                if (c != null) {
+                                    Intent manageAccountsIntent = new Intent(getApplicationContext(),
+                                            c);
+                                    startActivityForResult(manageAccountsIntent, ACTION_MANAGE_ACCOUNTS);
+                                }
+                            }
                         }
                         else if (menuItem.getItemId() == Menu.NONE) {
                                 // account clicked
@@ -402,9 +415,22 @@ public abstract class DrawerActivity extends ToolbarActivity implements DisplayU
             createAccount(false);
 
         } else if (i == R.id.drawer_menu_account_manage) {
-            Intent manageAccountsIntent = new Intent(getApplicationContext(),
-                    ManageAccountsActivity.class);
-            startActivityForResult(manageAccountsIntent, ACTION_MANAGE_ACCOUNTS);
+            String className = getString(R.string.manage_accounts_class);
+
+            if (className.length() != 0) {
+                Class<?> c = null;
+                try {
+                    c = Class.forName(className);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                if (c != null) {
+                    Intent manageAccountsIntent = new Intent(getApplicationContext(),
+                            c);
+                    startActivityForResult(manageAccountsIntent, ACTION_MANAGE_ACCOUNTS);
+                }
+            }
 
         } else if (i == Menu.NONE) {// account clicked
             accountClicked(menuItem.getTitle().toString());

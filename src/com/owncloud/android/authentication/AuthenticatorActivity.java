@@ -285,8 +285,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
             if (loginUrlInfo != null) {
                 mHostUrlInput.setText(loginUrlInfo.serverAddress);
-                mUsernameInput.setText(loginUrlInfo.username);
-                mPasswordInput.setText(loginUrlInfo.password);
+                if (loginUrlInfo.username != null && loginUrlInfo.username.length() != 0) {
+                    mUsernameInput.setText(loginUrlInfo.username);
+                }
+                if (loginUrlInfo.password != null && loginUrlInfo.password.length() != 0) {
+                    mPasswordInput.setText(loginUrlInfo.password);
+                }
 
                 if (loginUrlInfo.serverAddress != null && !mServerIsChecked) {
                     onUrlInputFocusLost();

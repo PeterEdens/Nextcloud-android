@@ -76,7 +76,7 @@ public class ManageAccountsActivity extends FileActivity
 
     private ListView mListView;
     private final Handler mHandler = new Handler();
-    private String mAccountName;
+    protected String mAccountName;
     private AccountListAdapter mAccountListAdapter;
     private ServiceConnection mDownloadServiceConnection, mUploadServiceConnection = null;
     Set<String> mOriginalAccounts;
