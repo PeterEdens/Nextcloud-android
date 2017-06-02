@@ -30,6 +30,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -129,7 +130,7 @@ public class Preferences extends PreferenceActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.actionbar_settings);
-
+        actionBar.setBackgroundDrawable(new ColorDrawable(0xff302e2f));
         // retrieve user's base uri
         setupBaseUri();
 
@@ -574,13 +575,10 @@ public class Preferences extends PreferenceActivity
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         super.onMenuItemSelected(featureId, item);
-        Intent intent;
 
         switch (item.getItemId()) {
         case android.R.id.home:
-            intent = new Intent(getBaseContext(), FileDisplayActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            finish();
             break;
         default:
             Log_OC.w(TAG, "Unknown menu item triggered");

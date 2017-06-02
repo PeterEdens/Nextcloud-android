@@ -17,18 +17,26 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/upload_files_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+	<include
+		layout="@layout/spreedbox_header"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@+id/frameLayout1"/>
+
     <include
         layout="@layout/toolbar_standard" />
 
-	<FrameLayout android:layout_height="0dp"
+	<FrameLayout android:layout_height="match_parent"
 		android:layout_width="fill_parent"
 		android:id="@+id/frameLayout1"
+		android:layout_below="@+id/appbar"
+		android:layout_above="@+id/separator"
 		android:layout_weight="1">
 
 		<ListView android:id="@android:id/list"
@@ -41,9 +49,11 @@
 	</FrameLayout>
 
 	<LinearLayout
+		android:id="@+id/separator"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal">
+		android:orientation="horizontal"
+		android:layout_above="@+id/buttons_layout">
 
 		<ImageView
 			android:layout_width="match_parent"
@@ -53,11 +63,13 @@
 	</LinearLayout>
 
     <LinearLayout
+		android:id="@+id/buttons_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="@dimen/standard_padding">
+        android:padding="@dimen/standard_padding"
+		android:layout_alignParentBottom="true">
 
 		<android.support.v7.widget.AppCompatButton
 			android:theme="@style/Button"
@@ -80,4 +92,4 @@
 		    android:text="@string/uploader_btn_upload_text" />
 
 	</LinearLayout>
-</LinearLayout>
+</RelativeLayout>

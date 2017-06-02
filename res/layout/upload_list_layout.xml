@@ -24,10 +24,16 @@
     android:fitsSystemWindows="true">
 
     <!-- The main content view -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <include
+            layout="@layout/spreedbox_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/upload_list_fragment"/>
 
         <include
             layout="@layout/toolbar_standard"/>
@@ -36,8 +42,9 @@
             android:id="@+id/upload_list_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/appbar"
             android:background="@color/background_color"/>
-    </LinearLayout>
+    </RelativeLayout>
 
     <include
         layout="@layout/drawer"

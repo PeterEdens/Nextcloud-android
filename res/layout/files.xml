@@ -26,10 +26,15 @@
     android:clickable="true" >
 
     <!-- The main content view -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/spreedbox_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/ListLayout"/>
 
         <include
             layout="@layout/toolbar_standard" />
@@ -38,6 +43,7 @@
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/appbar"
             android:background="@color/background_color"
 
             android:orientation="horizontal"
@@ -58,7 +64,7 @@
                 android:layout_weight="2" />
         </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <include
         layout="@layout/drawer"

@@ -16,11 +16,17 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/upload_files_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <include
+        layout="@layout/spreedbox_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/local_files_list"/>
 
     <include
         layout="@layout/toolbar_standard" />
@@ -30,11 +36,14 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/zero"
         android:layout_weight="1"
+        android:layout_below="@+id/appbar"
         class="com.owncloud.android.ui.fragment.LocalFileListFragment" />
 
     <LinearLayout
+        android:id="@+id/separator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/local_files_list"
         android:orientation="horizontal">
 
         <ImageView
@@ -45,13 +54,15 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/behaviour"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/standard_half_padding"
         android:paddingBottom="@dimen/standard_padding"
         android:paddingLeft="@dimen/standard_padding"
-        android:paddingRight="@dimen/standard_padding">
+        android:paddingRight="@dimen/standard_padding"
+        android:layout_below="@+id/separator">
 
         <TextView
             android:layout_width="match_parent"
@@ -75,7 +86,8 @@
         android:orientation="horizontal"
         android:paddingLeft="@dimen/standard_padding"
         android:paddingRight="@dimen/standard_padding"
-        android:paddingBottom="@dimen/standard_padding">
+        android:paddingBottom="@dimen/standard_padding"
+        android:layout_below="@+id/behaviour">
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/upload_files_btn_cancel"
@@ -96,4 +108,4 @@
 		
 	</LinearLayout>
     
-</LinearLayout>
+</RelativeLayout>

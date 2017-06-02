@@ -19,12 +19,17 @@
   You should have received a copy of the GNU Affero General Public
   License along with this program. If not, see <http://www.gnu.org/licenses/>.
  -->
-<LinearLayout
+<RelativeLayout
 	android:id="@+id/upload_files_layout"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical">
+	android:layout_height="fill_parent">
+
+	<include
+		layout="@layout/spreedbox_header"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@+id/account_list"/>
 
 	<include
 		layout="@layout/toolbar_standard"/>
@@ -34,7 +39,8 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:divider="@color/list_divider_background"
+		android:layout_below="@+id/appbar"
 		android:dividerHeight="@dimen/divider_height_independent">
 	</ListView>
 
-</LinearLayout>
+</RelativeLayout>
