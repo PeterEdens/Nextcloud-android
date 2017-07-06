@@ -151,7 +151,10 @@ public class ManageAccountsActivity extends FileActivity
         Account account = AccountUtils.getCurrentOwnCloudAccount(this);
         if (account == null) {
             return true;
-        } else {
+        } else if (mOriginalCurrentAccount == null) {
+            return true;
+        }
+        else {
             return !mOriginalCurrentAccount.equals(account.name);
         }
     }
@@ -214,11 +217,25 @@ public class ManageAccountsActivity extends FileActivity
 
     @Override
     public void changePasswordOfAccount(Account account) {
-        Intent updateAccountCredentials = new Intent(ManageAccountsActivity.this, AuthenticatorActivity.class);
-        updateAccountCredentials.putExtra(AuthenticatorActivity.EXTRA_ACCOUNT, account);
-        updateAccountCredentials.putExtra(AuthenticatorActivity.EXTRA_ACTION,
-                AuthenticatorActivity.ACTION_UPDATE_TOKEN);
-        startActivity(updateAccountCredentials);
+        String className = getString(R.string.authenticator_class);
+
+        if (className.length() != 0) {
+            Class<?> c = null;
+            try {
+                c = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            if (c != null) {
+                Intent updateAccountCredentials = new Intent(ManageAccountsActivity.this,
+                        c);
+                updateAccountCredentials.putExtra(AuthenticatorActivity.EXTRA_ACCOUNT, account);
+                updateAccountCredentials.putExtra(AuthenticatorActivity.EXTRA_ACTION,
+                        AuthenticatorActivity.ACTION_UPDATE_TOKEN);
+                startActivity(updateAccountCredentials);
+            }
+        }
     }
 
     @Override
