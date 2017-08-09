@@ -422,7 +422,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             if (mAccount != null) {
                 mServerInfo.mBaseUrl = mAccountMgr.getUserData(mAccount, Constants.KEY_OC_BASE_URL);
                 // TODO do next in a setter for mBaseUrl
-                mServerInfo.mIsSslConn = mServerInfo.mBaseUrl.startsWith(HTTPS_PROTOCOL);
+                if (mServerInfo.mBaseUrl != null) {
+                    mServerInfo.mIsSslConn = mServerInfo.mBaseUrl.startsWith(HTTPS_PROTOCOL);
+                }
                 mServerInfo.mVersion = AccountUtils.getServerVersion(mAccount);
             } else {
                 mServerInfo.mBaseUrl = getString(R.string.server_url).trim();
@@ -450,14 +452,17 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         /// step 2 - set properties of UI elements (text, visibility, enabled...)
         mHostUrlInput = (EditText) findViewById(R.id.hostUrlInput);
         // Convert IDN to Unicode
-        mHostUrlInput.setText(DisplayUtils.convertIdn(mServerInfo.mBaseUrl, false));
+        if (mServerInfo.mBaseUrl != null) {
+            mHostUrlInput.setText(DisplayUtils.convertIdn(mServerInfo.mBaseUrl, false));
+        }
+
         if (mAction != ACTION_CREATE) {
             /// lock things that should not change
             mHostUrlInput.setEnabled(false);
             mHostUrlInput.setFocusable(false);
         }
         if (isUrlInputAllowed) {
-            if (mServerInfo.mBaseUrl.isEmpty()) {
+            if (mServerInfo.mBaseUrl == null || mServerInfo.mBaseUrl.isEmpty()) {
                 checkHostUrl = false;
             }
             mRefreshButton = findViewById(R.id.embeddedRefreshButton);

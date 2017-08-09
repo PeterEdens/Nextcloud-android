@@ -544,7 +544,9 @@ public class OCFileListFragment extends ExtendedListFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_FILE, mFile);
-        mMultiChoiceModeListener.storeStateIn(outState);
+        if (mMultiChoiceModeListener != null) {
+            mMultiChoiceModeListener.storeStateIn(outState);
+        }
     }
 
     @Override
@@ -872,7 +874,7 @@ public class OCFileListFragment extends ExtendedListFragment {
      * @return          'true' is folder should be shown in grid mode, 'false' if list mode is preferred.
      */
     public boolean isGridViewPreferred(OCFile file){
-        if (file != null) {
+        if (file != null && mContainerActivity != null) {
             OCFile fileToTest = file;
             OCFile parentDir;
             String parentPath = null;

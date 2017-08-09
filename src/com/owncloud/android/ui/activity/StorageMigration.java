@@ -243,7 +243,9 @@ public class StorageMigration {
 
         protected void restoreAccountsSyncStatus(boolean oldSync[]) {
             for (int i = 0; i < mOcAccounts.length; ++i) {
-                ContentResolver.setSyncAutomatically(mOcAccounts[i], mAuthority, oldSync[i]);
+                if (i < mOcAccounts.length && i < oldSync.length) {
+                    ContentResolver.setSyncAutomatically(mOcAccounts[i], mAuthority, oldSync[i]);
+                }
             }
         }
     }

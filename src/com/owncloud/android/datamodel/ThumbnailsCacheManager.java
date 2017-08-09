@@ -56,6 +56,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.SocketException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -514,10 +515,15 @@ public class ThumbnailsCacheManager {
 
             try {
                 if (mAccount != null) {
-                    OwnCloudAccount ocAccount = new OwnCloudAccount(mAccount,
-                            MainApp.getAppContext());
-                    mClient = OwnCloudClientManagerFactory.getDefaultSingleton().
-                            getClientFor(ocAccount, MainApp.getAppContext());
+                    try {
+                        OwnCloudAccount ocAccount = new OwnCloudAccount(mAccount,
+                                MainApp.getAppContext());
+                        mClient = OwnCloudClientManagerFactory.getDefaultSingleton().
+                                getClientFor(ocAccount, MainApp.getAppContext());
+                    }
+                    catch (com.owncloud.android.lib.common.accounts.AccountUtils.AccountNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 mUsername = params[0];
@@ -525,7 +531,11 @@ public class ThumbnailsCacheManager {
 
             } catch(OutOfMemoryError oome) {
                 System.gc(); // todo, does this really make sense?
-            } catch(Throwable t){
+            }
+            catch (SocketException e) {
+                e.printStackTrace();
+            }
+            catch(Throwable t){
                 // the app should never break due to a problem with avatars
                 Log_OC.e(TAG, "Generation of avatar for " + mUsername + " failed", t);
             }
