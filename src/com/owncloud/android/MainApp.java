@@ -190,7 +190,10 @@ public class MainApp extends Application {
     //  From AccountAuthenticator 
     //  public static final String AUTHORITY = "org.owncloud";
     public static String getAuthority() {
-        return getAppContext().getResources().getString(R.string.authority);
+        if (getAppContext() != null && getAppContext().getResources() != null) {
+            return getAppContext().getResources().getString(R.string.authority);
+        }
+        return "";
     }
     
     //  From AccountAuthenticator

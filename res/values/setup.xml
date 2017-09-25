@@ -15,7 +15,7 @@
     <string name ="log_name">nextcloud</string>
     <string name ="default_display_name_for_root_folder">Nextcloud</string>
     <string name ="user_agent">Mozilla/5.0 (Android) ownCloud-android/%1$s</string>
-    <string name="share_with_authority">com.nextcloud.android.providers.UsersAndGroupsSearchProvider</string>
+    <string name="share_with_authority">com.nextcloud.spreedbox.android.providers.UsersAndGroupsSearchProvider</string>
     <string name="chooser_class"></string>
     <string name="manage_accounts_class">com.owncloud.android.ui.activity.ManageAccountsActivity</string>
     <string name="authenticator_class">com.owncloud.android.authentication.AuthenticatorActivity</string>
